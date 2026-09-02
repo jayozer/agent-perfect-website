@@ -1,0 +1,13 @@
+{
+  "name": "site-score",
+  "description": "Measure a website on PageSpeed Insights (Performance, Accessibility, Best Practices, SEO, Agentic Browsing), Cloudflare's isitagentready.com, and Vercel's is-agentic.com, then make the code changes that push every category toward 100.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Jay Ozer",
+    "email": "jayozer@gmail.com"
+  },
+  "homepage": "https://github.com/jayozer/site_score",
+  "repository": "https://github.com/jayozer/site_score",
+  "license": "MIT",
+  "keywords": ["pagespeed", "lighthouse", "core-web-vitals", "accessibility", "seo", "agent-readiness", "llms-txt", "webmcp", "isitagentready", "is-agentic"]
+}

@@ -1,0 +1,62 @@
+{
+  "skill_name": "site-score",
+  "evals": [
+    {
+      "id": 1,
+      "name": "audit-live-nextjs-site",
+      "prompt": "Can you check how https://www.poppykidsdental.com scores on pagespeed, isitagentready.com and is-agentic.com right now and tell me what's holding it back from 100 everywhere? I don't have a PageSpeed API key handy and you don't have browser access in this session, so use whatever you can run from the command line. The repo for the site is the current working directory (Next.js 16 on Vercel). Don't change any code yet, just write me a report at ./site-scores-report.md with the scores per category, the exact audits/checks that fail, and a ranked fix list with what each fix would be worth.",
+      "expected_output": "A markdown report with per-category scores from a local Lighthouse run (all five categories incl. Agentic Browsing), the official isitagentready.com (content + all profiles) and is-agentic.com scores via their public APIs, the failing audits by id with the offending elements (footer 'Areas We Serve' link fails target-size), agent-readiness findings (no Link header, DNS-AID, missing CSP / X-Content-Type-Options / clickjacking header, Organization JSON-LD lacking contactPoint, blog posts without canonical, inner pages missing header/footer landmarks), a ranked fix list with point impact, and honest notes on PSI variance and WebMCP audits being N/A on PSI.",
+      "files": [],
+      "assertions": [
+        "A markdown report exists at ./site-scores-report.md (in the working directory or saved outputs) with a per-category score table that includes all five Lighthouse categories: Performance, Accessibility, Best Practices, SEO, Agentic Browsing",
+        "The report names the failing `target-size` audit and identifies the footer 'Areas We Serve' link (class footer-areas-link) as the element costing Accessibility points",
+        "The report lists the missing security headers found by the checks (Content-Security-Policy, X-Content-Type-Options, and clickjacking protection / frame-ancestors) as fix items",
+        "The report contains a ranked fix list where each item states an estimated point/score impact or which grader/category it moves",
+        "The report includes at least one honest caveat: PSI Performance varies run to run, and/or WebMCP audits are 'not applicable' on PSI and only score with local Lighthouse",
+        "No repository source files were modified (git status shows no new modifications beyond the pre-existing package.json/package-lock.json/redesign.md)",
+        "Scores in the report come from a real local Lighthouse run (saved JSON or transcript evidence); the report does not fabricate official pagespeed.web.dev, isitagentready.com, or is-agentic.com scores it did not obtain",
+        "The report includes the official isitagentready.com score (with profile named) and the official is-agentic.com score, obtained through the skill's API runners or equivalent API calls, with their failing checks (e.g. linkHeaders / dnsAid at Cloudflare; org-schema-completeness contactPoint at is-agentic)",
+        "Every score in the report's table can be traced to a saved Lighthouse/API JSON under the outputs and matches it (spot-check at least three numbers)",
+        "The audit covers the homepage plus at least four other templates (content page, listing, post, form page or 404) and the ranked fix list leads with the largest measured deficit, not with zero-point hygiene items"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "fix-accessibility-regression",
+      "prompt": "PageSpeed says the homepage accessibility score dropped to 97 (it used to be 100) and I can't tell what changed. Find what's failing, fix it in this repo (Next.js, the CSS sources are in public/css and get bundled by npm run build:css), verify it locally, and tell me what you changed. Don't touch the visual design more than you have to.",
+      "expected_output": "Identifies the target-size audit failing on the footer 'Areas We Serve' link (a.footer-areas-link) and its actual cause (the homepage FAQ section's content-visibility placeholder lets its accordion triggers overlap the footer link during axe measurement, so the 14px link loses its spacing exemption), fixes it minimally (drop the pk-cv class from the FAQ wrapper, or give the footer link a >=24px hit area), rebuilds/builds, verifies with local Lighthouse against a production build showing Accessibility 100 with target-size passing, and reports the change and verification.",
+      "files": [],
+      "assertions": [
+        "The transcript or final message identifies the `target-size` audit and the footer area link (a.footer-areas-link / footer-areas) as the cause of the Accessibility 97",
+        "The fix targets the root cause of the target-size failure on the footer link with a minimal, scoped change (either enlarging that link's hit area in a CSS source under public/css, or removing the overlapping element / content-visibility placeholder that causes it), touching at most two files and no more than ~20 lines",
+        "The CSS bundles were rebuilt (public/css/site.min.css and/or site-home.min.css changed) or a production build was run after the change",
+        "Verification was performed with a local Lighthouse run against a production build (next build + next start, or the deployed site) and the report states Accessibility 100 with target-size passing, with evidence (JSON path or output excerpt)",
+        "The diff does not change unrelated visual design: no color, font, or layout edits outside the footer link hit-area fix",
+        "The final message states what changed (file + rule) and how it was verified",
+        "The report explains the regression mechanism (why the page scored 100 before and 97 now), not just which audit fails",
+        "A local before/after Performance comparison on the same build shows no regression from the fix (within run-to-run noise)"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "static-site-to-100",
+      "prompt": "I've got a tiny static site for a bakery in ./demo-site (plain HTML/CSS/JS, no framework, I'll host it on Cloudflare Pages). Serve it locally, score it the way pagespeed.web.dev and the agent-readiness checkers (isitagentready.com / is-agentic.com) would, then fix everything you can so it gets 100 in every PageSpeed category and passes the agent checks. Keep it a plain static site and keep the look. When you're done, tell me the before/after scores and what's left that can't be fixed from the files alone.",
+      "expected_output": "Before/after scorecard from local Lighthouse (all five categories). Fixes: robots.txt no longer blocks GPTBot/ClaudeBot/PerplexityBot; a valid llms.txt (H1, summary, links) is added; meta descriptions, html lang, real <a>/<button> instead of onclick divs, alt text, labels on form fields, the 400 ms blocking loop and console.error removed or deferred, viewport no longer disables zoom, contrast tokens darkened, images sized with width/height and right-sized, render-blocking font/stylesheet handled, heading order fixed, footer links large enough, JSON-LD for the bakery, sitemap.xml. Notes that headers (HSTS/CSP) and TTFB depend on the host, and that WebMCP/markdown negotiation need a server or Pages Functions.",
+      "files": [
+        "evals/files/demo-site"
+      ],
+      "assertions": [
+        "Before and after scores are reported for all five Lighthouse categories from local runs, with after scores of >= 95 for Accessibility, Best Practices, and SEO and Performance >= 90",
+        "robots.txt no longer contains 'Disallow: /' for GPTBot, ClaudeBot, or PerplexityBot, and contains a Sitemap: line",
+        "An llms.txt file exists with an H1 line, a '> ' summary line, and at least 3 markdown links",
+        "index.html has html lang, a meta description, alt text on every img, labels (or aria-label) for each form field, a viewport without user-scalable=no / maximum-scale<5, and the onclick div/span navigation replaced with real <a href> or <button> elements",
+        "The 400 ms synchronous loop and the console.error in app.js are removed or deferred, and the gtag script no longer blocks rendering (async/defer or loaded after the load event)",
+        "JSON-LD structured data (Bakery or LocalBusiness) is added to index.html and a sitemap.xml file exists",
+        "The look is preserved: style.css keeps the same font families and layout classes; contrast is fixed by darkening the existing colors rather than redesigning",
+        "The final message lists what cannot be fixed from static files alone (e.g. HSTS/CSP/security headers, compression, TTFB depend on the host; markdown content negotiation/WebMCP need a server or Pages Functions)",
+        "About, menu and contact pages are fixed too (lang, description, alt, heading order, labels) and every internal link and image path in the fixed site resolves",
+        "No capability files a bakery does not have (api-catalog, MCP server card, OAuth metadata, A2A card) are added, and llms.txt / JSON-LD contain only facts present in the original pages or clearly marked placeholders"
+      ]
+    }
+  ]
+}

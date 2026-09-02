@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Harbor Lane Bakery</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Open+Sans:wght@400;600&display=swap">
+<script src="https://www.googletagmanager.com/gtag/js?id=G-DEMO12345"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','G-DEMO12345');</script>
+<script src="app.js"></script>
+</head>
+<body>
+<div class="nav">
+  <img src="images/logo.svg" class="logo">
+  <span class="navlink" onclick="location.href='about.html'">About</span>
+  <span class="navlink" onclick="location.href='menu.html'">Menu</span>
+  <span class="navlink" onclick="location.href='contact.html'">Contact</span>
+</div>
+<div class="hero">
+  <img src="images/hero.jpg" class="hero-img">
+  <h1>Fresh sourdough, every morning</h1>
+  <p class="muted">Harbor Lane Bakery, 14 Harbor Lane, Port Ellis. Open 7am to 2pm, Tuesday to Sunday.</p>
+  <div class="btn" onclick="location.href='menu.html'">See the menu</div>
+</div>
+<div class="section">
+  <h3>What we bake</h3>
+  <ul>
+    <li>Country sourdough and seeded loaves</li>
+    <li>Croissants, kouign-amann, morning buns</li>
+    <li>Birthday cakes to order (48 hours notice)</li>
+  </ul>
+  <img src="images/loaf.jpg" width="600">
+</div>
+<div class="section">
+  <h2>Order ahead</h2>
+  <form action="/order" method="post">
+    <input type="text" name="name" placeholder="">
+    <input type="email" name="email" placeholder="">
+    <select name="item"><option>Country loaf</option><option>Croissant box</option></select>
+    <input type="submit" value="">
+  </form>
+</div>
+<div class="section">
+  <h2>Find us</h2>
+  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1000!2d0!3d0" width="600" height="300" style="border:0" loading="lazy"></iframe>
+  <p>Questions? <a href="#" onclick="openChat()">click here</a></p>
+</div>
+<div class="footer">
+  <a href="privacy.html" class="tiny">Privacy</a> · <a href="terms.html" class="tiny">Terms</a>
+  <p class="muted">© Harbor Lane Bakery</p>
+</div>
+</body>
+</html>

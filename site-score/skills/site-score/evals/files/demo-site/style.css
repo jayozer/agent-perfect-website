@@ -1,0 +1,13 @@
+body { font-family: "Open Sans", Arial, sans-serif; margin: 0; color: #222; background: #fff; }
+h1, h2, h3, h4 { font-family: Lora, Georgia, serif; }
+.nav { display: flex; gap: 24px; align-items: center; padding: 12px 24px; background: #faf3e8; }
+.nav a, .navlink { color: #a5c9a1; cursor: pointer; text-decoration: none; }
+.logo { height: 40px; }
+.hero { padding: 24px; }
+.hero-img { width: 100%; }
+.muted { color: #9a9a9a; }
+.btn { display: inline-block; background: #f0a24b; color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.section { padding: 24px; }
+input, select { display: block; margin: 8px 0; padding: 4px; }
+.footer { padding: 24px; background: #faf3e8; }
+.tiny { font-size: 10px; color: #b8b8b8; }
