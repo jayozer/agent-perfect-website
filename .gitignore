@@ -2,3 +2,5 @@
 node_modules/
 agent-perfect-website-out/
 *.log
+.env
+.env.local

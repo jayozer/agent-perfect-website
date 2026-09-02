@@ -28,7 +28,8 @@ only the reference the scorecard points you to.
   load, existing tests. Check git history and any TODO/audit notes for what has
   already been fixed or deliberately declined so you do not re-propose it.
 - **PageSpeed API key.** Look for `PAGESPEED_API_KEY` (or `PSI_API_KEY`,
-  `GOOGLE_API_KEY`) in the environment or `.env*`. The keyless quota is gone
+  `GOOGLE_API_KEY`) in the environment or `.env*`; `psi.mjs` loads
+  `.env.local`/`.env` from the current directory by itself. The keyless quota is gone
   (HTTP 429 on the first call), so without a key use local Lighthouse for the
   numbers and the browser for the official report. Tell the user a free key
   (Google Cloud Console → enable "PageSpeed Insights API" → API key) makes

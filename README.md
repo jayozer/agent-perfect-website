@@ -104,7 +104,7 @@ The reference files inside the skill hold the details; the short version:
 ## Requirements
 
 - Node 22 or newer and Chrome or Chromium. `npx -y lighthouse` fetches the CLI on first use.
-- A PageSpeed Insights API key for `psi.mjs`. It is free (Google Cloud Console → enable "PageSpeed Insights API" → create a key → `export PAGESPEED_API_KEY=...`). The keyless quota is exhausted at all hours. Without a key the skill measures with local Lighthouse and points you at the pagespeed.web.dev page for the official report.
+- A PageSpeed Insights API key for `psi.mjs`. It is free (Google Cloud Console → enable "PageSpeed Insights API" → create a key). Put it in a `.env` or `.env.local` in the project you run the skill from (see `.env.example`), or export `PAGESPEED_API_KEY`. The keyless quota is exhausted at all hours. Without a key the skill measures with local Lighthouse and points you at the pagespeed.web.dev page for the official report.
 - No keys for isitagentready.com or is-agentic.com.
 
 ## How it was tested

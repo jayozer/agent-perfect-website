@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "One skill: score a website on PageSpeed Insights, isitagentready.com, and is-agentic.com, then fix it toward 100 everywhere.",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "plugins": [
     {
@@ -14,7 +14,16 @@
       "source": "./agent-perfect-website",
       "description": "Measure and maximize PageSpeed (incl. Agentic Browsing), Cloudflare agent-readiness, and Vercel Is Agentic scores; scripts for all three graders plus fix playbooks.",
       "category": "web",
-      "keywords": ["pagespeed", "lighthouse", "core-web-vitals", "accessibility", "seo", "agent-readiness", "llms-txt", "webmcp"]
+      "keywords": [
+        "pagespeed",
+        "lighthouse",
+        "core-web-vitals",
+        "accessibility",
+        "seo",
+        "agent-readiness",
+        "llms-txt",
+        "webmcp"
+      ]
     }
   ]
 }

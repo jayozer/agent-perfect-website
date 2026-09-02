@@ -20,6 +20,19 @@ import fs from "node:fs";
 import path from "node:path";
 import { toMarkdown, normalize } from "./lh-summary.mjs";
 
+// Pick up PAGESPEED_API_KEY from the project's .env.local or .env when it is
+// not already in the environment (Node 21.7+ / 20.12+ has loadEnvFile; it
+// never overrides variables that are already set).
+if (!process.env.PAGESPEED_API_KEY && !process.env.PSI_API_KEY && !process.env.GOOGLE_API_KEY && typeof process.loadEnvFile === "function") {
+  for (const f of [".env.local", ".env"]) {
+    try {
+      process.loadEnvFile(f);
+    } catch {
+      /* file absent */
+    }
+  }
+}
+
 const ENDPOINT = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed";
 const CATEGORIES = ["performance", "accessibility", "best-practices", "seo", "agentic-browsing"];
 
