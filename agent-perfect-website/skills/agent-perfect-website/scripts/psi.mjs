@@ -14,7 +14,7 @@
 // and, for the official numbers, drive https://pagespeed.web.dev in a
 // browser.
 //
-// Each run's full JSON is saved under --out (default ./site-score-out) so the
+// Each run's full JSON is saved under --out (default ./agent-perfect-website-out) so the
 // summary can be regenerated with lh-summary.mjs and elements/urls looked up.
 import fs from "node:fs";
 import path from "node:path";
@@ -36,7 +36,7 @@ const strategyArg = arg("--strategy", "mobile");
 const strategies = strategyArg === "both" ? ["mobile", "desktop"] : [strategyArg];
 const runs = Number(arg("--runs", "1")) || 1;
 const key = arg("--key", process.env.PAGESPEED_API_KEY || process.env.PSI_API_KEY || process.env.GOOGLE_API_KEY || "");
-const outDir = arg("--out", "./site-score-out");
+const outDir = arg("--out", "./agent-perfect-website-out");
 const top = Number(arg("--top", "5")) || 5;
 let categories = process.argv.includes("--no-agentic") ? CATEGORIES.slice(0, 4) : CATEGORIES;
 fs.mkdirSync(outDir, { recursive: true });

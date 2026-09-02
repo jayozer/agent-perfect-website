@@ -1,5 +1,5 @@
 {
-  "name": "site-score",
+  "name": "agent-perfect-website",
   "owner": {
     "name": "Jay Ozer",
     "email": "jayozer@gmail.com"
@@ -10,8 +10,8 @@
   },
   "plugins": [
     {
-      "name": "site-score",
-      "source": "./site-score",
+      "name": "agent-perfect-website",
+      "source": "./agent-perfect-website",
       "description": "Measure and maximize PageSpeed (incl. Agentic Browsing), Cloudflare agent-readiness, and Vercel Is Agentic scores; scripts for all three graders plus fix playbooks.",
       "category": "web",
       "keywords": ["pagespeed", "lighthouse", "core-web-vitals", "accessibility", "seo", "agent-readiness", "llms-txt", "webmcp"]

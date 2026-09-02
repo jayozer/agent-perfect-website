@@ -37,7 +37,7 @@ if (!url) {
 const runs = Number(arg("--runs", "1")) || 1;
 const ffArg = arg("--form-factor", "mobile");
 const formFactors = ffArg === "both" ? ["mobile", "desktop"] : [ffArg];
-const outDir = arg("--out", "./site-score-out");
+const outDir = arg("--out", "./agent-perfect-website-out");
 const top = Number(arg("--top", "5")) || 5;
 const categories = arg("--categories", "performance,accessibility,best-practices,seo,agentic-browsing");
 const webmcp = !process.argv.includes("--no-webmcp");

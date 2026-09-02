@@ -1,9 +1,11 @@
-# site-score
+# agent-perfect-website
 
-**One command that audits your site on the three graders that matter in 2026, then fixes what is failing until every score is as close to 100 as the platform allows.**
+**Perfect scores. Agent-ready. One command.**
+
+Audits your site on the three graders that matter in 2026, then fixes what is failing until every score is as close to 100 as the platform allows.
 
 ```
-/site-score https://your-site.com
+/agent-perfect-website https://your-site.com
 ```
 
 | Grader | What it scores | Where a real site landed after this skill |
@@ -29,14 +31,14 @@ This skill turns that chore into a loop Claude runs end to end:
 ## Install
 
 ```
-claude plugin marketplace add jayozer/site_score
-claude plugin install site-score@site-score
+claude plugin marketplace add jayozer/agent-perfect-website
+claude plugin install agent-perfect-website@agent-perfect-website
 ```
 
 Restart Claude Code, then in any project:
 
 ```
-/site-score https://your-site.com
+/agent-perfect-website https://your-site.com
 ```
 
 You do not have to remember the command. The skill triggers on ordinary requests like these:
@@ -85,9 +87,9 @@ Each script also works on its own, outside Claude Code (Node 22+):
 | `agent-checks.mjs <url>` | Offline agent-readiness checks for localhost and previews: robots, llms.txt, negotiation, `Link` header, JSON-LD, headers, bot access, 404s. |
 
 ```
-node site-score/skills/site-score/scripts/lighthouse.mjs https://example.com/ --runs 3 --out /tmp/scores
-node site-score/skills/site-score/scripts/isitagentready.mjs https://example.com/ --profile content
-node site-score/skills/site-score/scripts/is-agentic.mjs example.com --full
+node agent-perfect-website/skills/agent-perfect-website/scripts/lighthouse.mjs https://example.com/ --runs 3 --out /tmp/scores
+node agent-perfect-website/skills/agent-perfect-website/scripts/isitagentready.mjs https://example.com/ --profile content
+node agent-perfect-website/skills/agent-perfect-website/scripts/is-agentic.mjs example.com --full
 ```
 
 ## The graders, decoded
@@ -120,9 +122,9 @@ The baseline audit missed the security headers and claimed Cloudflare gives no p
 ## Layout
 
 ```
-site-score/                       the plugin
+agent-perfect-website/                       the plugin
 ├── .claude-plugin/plugin.json
-└── skills/site-score/
+└── skills/agent-perfect-website/
     ├── SKILL.md                  the workflow
     ├── scripts/                  the six scripts above
     ├── references/

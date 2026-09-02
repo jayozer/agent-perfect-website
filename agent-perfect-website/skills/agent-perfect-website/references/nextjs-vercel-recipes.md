@@ -185,7 +185,7 @@ positioned fixed/overlaid.
 
 ```
 npm run build && npx next start -p 4123 &
-node <skill>/scripts/lighthouse.mjs http://localhost:4123/ --runs 3 --out /tmp/site-score
+node <skill>/scripts/lighthouse.mjs http://localhost:4123/ --runs 3 --out /tmp/agent-perfect-website
 node <skill>/scripts/agent-checks.mjs http://localhost:4123
 ```
 

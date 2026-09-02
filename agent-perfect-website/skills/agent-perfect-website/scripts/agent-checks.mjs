@@ -45,7 +45,7 @@ if (!start) {
 }
 const argv = (name, def) => (args.includes(name) ? args[args.indexOf(name) + 1] : def);
 const PAGES = Number(argv("--pages", "4")) || 4;
-const UA = argv("--ua", "Mozilla/5.0 (compatible; site-score-agent-checks/1.0; +https://github.com/)");
+const UA = argv("--ua", "Mozilla/5.0 (compatible; agent-perfect-website-agent-checks/1.0; +https://github.com/)");
 const origin = new URL(start).origin;
 const results = [];
 const add = (area, name, status, evidence, fix = "") => results.push({ area, name, status, evidence, fix });

@@ -1,14 +1,14 @@
 {
-  "skill_name": "site-score",
+  "skill_name": "agent-perfect-website",
   "evals": [
     {
       "id": 1,
       "name": "audit-live-nextjs-site",
-      "prompt": "Can you check how https://www.poppykidsdental.com scores on pagespeed, isitagentready.com and is-agentic.com right now and tell me what's holding it back from 100 everywhere? I don't have a PageSpeed API key handy and you don't have browser access in this session, so use whatever you can run from the command line. The repo for the site is the current working directory (Next.js 16 on Vercel). Don't change any code yet, just write me a report at ./site-scores-report.md with the scores per category, the exact audits/checks that fail, and a ranked fix list with what each fix would be worth.",
+      "prompt": "Can you check how https://www.poppykidsdental.com scores on pagespeed, isitagentready.com and is-agentic.com right now and tell me what's holding it back from 100 everywhere? I don't have a PageSpeed API key handy and you don't have browser access in this session, so use whatever you can run from the command line. The repo for the site is the current working directory (Next.js 16 on Vercel). Don't change any code yet, just write me a report at ./agent-perfect-websites-report.md with the scores per category, the exact audits/checks that fail, and a ranked fix list with what each fix would be worth.",
       "expected_output": "A markdown report with per-category scores from a local Lighthouse run (all five categories incl. Agentic Browsing), the official isitagentready.com (content + all profiles) and is-agentic.com scores via their public APIs, the failing audits by id with the offending elements (footer 'Areas We Serve' link fails target-size), agent-readiness findings (no Link header, DNS-AID, missing CSP / X-Content-Type-Options / clickjacking header, Organization JSON-LD lacking contactPoint, blog posts without canonical, inner pages missing header/footer landmarks), a ranked fix list with point impact, and honest notes on PSI variance and WebMCP audits being N/A on PSI.",
       "files": [],
       "assertions": [
-        "A markdown report exists at ./site-scores-report.md (in the working directory or saved outputs) with a per-category score table that includes all five Lighthouse categories: Performance, Accessibility, Best Practices, SEO, Agentic Browsing",
+        "A markdown report exists at ./agent-perfect-websites-report.md (in the working directory or saved outputs) with a per-category score table that includes all five Lighthouse categories: Performance, Accessibility, Best Practices, SEO, Agentic Browsing",
         "The report names the failing `target-size` audit and identifies the footer 'Areas We Serve' link (class footer-areas-link) as the element costing Accessibility points",
         "The report lists the missing security headers found by the checks (Content-Security-Policy, X-Content-Type-Options, and clickjacking protection / frame-ancestors) as fix items",
         "The report contains a ranked fix list where each item states an estimated point/score impact or which grader/category it moves",

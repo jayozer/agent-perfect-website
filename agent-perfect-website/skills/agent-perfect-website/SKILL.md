@@ -1,9 +1,9 @@
 ---
-name: site-score
+name: agent-perfect-website
 description: Measure and maximize a website's scores on Google PageSpeed Insights (Performance, Accessibility, Best Practices, SEO, and the new Agentic Browsing category), Cloudflare's isitagentready.com, and Vercel's is-agentic.com, then make the code changes that push every category toward 100. Use this whenever the user mentions PageSpeed, Lighthouse, Core Web Vitals, LCP/CLS/TBT/INP, site speed, web vitals, accessibility or SEO scores, agent readiness, agentic browsing, llms.txt, AI crawlers (GPTBot, ClaudeBot, PerplexityBot), serving markdown to agents, WebMCP, or wants a site audited, scored, or "checked" for quality, even if they name only one of the three tools or none of them.
 ---
 
-# Site Score: measure, fix, verify, report
+# Agent-Perfect Website: measure, fix, verify, report
 
 Three public graders, one goal: every category as close to 100 as the
 platform allows.
@@ -44,7 +44,7 @@ only the reference the scorecard points you to.
 ## 1. Measure the baseline
 
 Save everything under a scratch directory (never inside the repo unless it is
-gitignored), e.g. `--out /tmp/site-score/<date>`.
+gitignored), e.g. `--out /tmp/agent-perfect-website/<date>`.
 
 ```
 # Official Lighthouse numbers (needs key). Mobile is the one people quote.
