@@ -4,7 +4,7 @@
     {
       "id": 1,
       "name": "audit-live-nextjs-site",
-      "prompt": "Can you check how https://www.poppykidsdental.com scores on pagespeed, isitagentready.com and is-agentic.com right now and tell me what's holding it back from 100 everywhere? I don't have a PageSpeed API key handy and you don't have browser access in this session, so use whatever you can run from the command line. The repo for the site is the current working directory (Next.js 16 on Vercel). Don't change any code yet, just write me a report at ./agent-perfect-websites-report.md with the scores per category, the exact audits/checks that fail, and a ranked fix list with what each fix would be worth.",
+      "prompt": "Can you check how https://www.<your-production-site> scores on pagespeed, isitagentready.com and is-agentic.com right now and tell me what's holding it back from 100 everywhere? I don't have a PageSpeed API key handy and you don't have browser access in this session, so use whatever you can run from the command line. The repo for the site is the current working directory (Next.js 16 on Vercel). Don't change any code yet, just write me a report at ./agent-perfect-websites-report.md with the scores per category, the exact audits/checks that fail, and a ranked fix list with what each fix would be worth.",
       "expected_output": "A markdown report with per-category scores from a local Lighthouse run (all five categories incl. Agentic Browsing), the official isitagentready.com (content + all profiles) and is-agentic.com scores via their public APIs, the failing audits by id with the offending elements (footer 'Areas We Serve' link fails target-size), agent-readiness findings (no Link header, DNS-AID, missing CSP / X-Content-Type-Options / clickjacking header, Organization JSON-LD lacking contactPoint, blog posts without canonical, inner pages missing header/footer landmarks), a ranked fix list with point impact, and honest notes on PSI variance and WebMCP audits being N/A on PSI.",
       "files": [],
       "assertions": [
@@ -58,5 +58,6 @@
         "No capability files a bakery does not have (api-catalog, MCP server card, OAuth metadata, A2A card) are added, and llms.txt / JSON-LD contain only facts present in the original pages or clearly marked placeholders"
       ]
     }
-  ]
+  ],
+  "note": "Evals 1 and 2 target a real production site and its repo (replace <your-production-site> and run them from that repo's checkout); eval 3 uses the bundled demo-site fixture."
 }

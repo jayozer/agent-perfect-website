@@ -94,7 +94,7 @@ positioned fixed/overlaid.
 ## 6. Accessibility (`color-contrast`, `aria-dialog-name`, `aria-allowed-role`, `target-size`, `heading-order`)
 
 - Contrast: darken brand tokens minimally to AA and write the ratio next to
-  the value (`--poppy-orange: #c74a0a; /* 4.6:1 on white */`). Do it at the
+  the value (`--brand-orange: #c74a0a; /* 4.6:1 on white */`). Do it at the
   token; per-selector patches leave the next component failing again.
 - Dialogs: cookie consent needs an accessible name; if its title is an image,
   give the image alt text or add `aria-label`.

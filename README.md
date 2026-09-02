@@ -5,7 +5,7 @@
 Audits your site on the three graders that matter in 2026, then fixes what is failing until every score is as close to 100 as the platform allows.
 
 ```
-/agent-perfect-website https://your-site.com
+/agent-perfect-website https://dataacrobat.com
 ```
 
 | Grader | What it scores | Where a real site landed after this skill |
@@ -14,7 +14,7 @@ Audits your site on the three graders that matter in 2026, then fixes what is fa
 | [Is It Agent Ready?](https://isitagentready.com/) (Cloudflare) | Can agents discover and read the site: robots AI rules, Content-Signal, sitemap, `Link` header, markdown negotiation, `.well-known` discovery, WebMCP, DNS-AID | Level 3 → **Level 5**, 71/100 on the Content profile |
 | [Is Agentic](https://is-agentic.com/) (Vercel, scored by Ora) | 125 checks: content without JS, bot reachability, markdown negotiation, real 404s, JSON-LD completeness, llms.txt, trust pages | 79 → **100** |
 
-Numbers are from [poppykidsdental.com](https://www.poppykidsdental.com), a Next.js 16 site on Vercel, the site this skill was built on.
+Numbers are from the site this skill was built on: a Next.js 16 site on Vercel that started at 67 mobile Performance and Level 3 agent readiness.
 
 ## Why this exists
 
@@ -38,7 +38,7 @@ claude plugin install agent-perfect-website@agent-perfect-website
 Restart Claude Code, then in any project:
 
 ```
-/agent-perfect-website https://your-site.com
+/agent-perfect-website https://dataacrobat.com
 ```
 
 You do not have to remember the command. The skill triggers on ordinary requests like these:
@@ -87,9 +87,9 @@ Each script also works on its own, outside Claude Code (Node 22+):
 | `agent-checks.mjs <url>` | Offline agent-readiness checks for localhost and previews: robots, llms.txt, negotiation, `Link` header, JSON-LD, headers, bot access, 404s. |
 
 ```
-node agent-perfect-website/skills/agent-perfect-website/scripts/lighthouse.mjs https://example.com/ --runs 3 --out /tmp/scores
-node agent-perfect-website/skills/agent-perfect-website/scripts/isitagentready.mjs https://example.com/ --profile content
-node agent-perfect-website/skills/agent-perfect-website/scripts/is-agentic.mjs example.com --full
+node agent-perfect-website/skills/agent-perfect-website/scripts/lighthouse.mjs https://dataacrobat.com/ --runs 3 --out /tmp/scores
+node agent-perfect-website/skills/agent-perfect-website/scripts/isitagentready.mjs https://dataacrobat.com/ --profile content
+node agent-perfect-website/skills/agent-perfect-website/scripts/is-agentic.mjs dataacrobat.com --full
 ```
 
 ## The graders, decoded
