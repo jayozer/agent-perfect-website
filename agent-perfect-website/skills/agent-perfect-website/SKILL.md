@@ -20,16 +20,27 @@ only the reference the scorecard points you to.
 ## 0. Establish the inputs (do not ask what you can infer)
 
 - **Target URL(s).** Production URL from the repo (`metadataBase`, `sitemap`,
-  README, `vercel.json`) or the user. Score the homepage plus the main
-  templates (a content page, a listing, a post, contact/forms, 404). Graders
-  are per-URL; a 100 on the homepage with a 90 on every post is not done.
+  README, `vercel.json`) or the user. Graders are per-URL; a 100 on the
+  homepage with a 90 on every post is not done, so the baseline is every
+  page (`site-sweep.mjs`, below), not a sample.
+- **The canonical host.** `example.com` and `www.example.com` are two sites
+  to every grader, and is-agentic.com keys its reports by exact host. Run
+  `node <skill>/scripts/site-sweep.mjs example.com --dry-run` first: it
+  follows the redirect from whatever you typed, cross-checks the homepage's
+  `<link rel=canonical>`, and prints the host to score. If the redirect and
+  the canonical disagree, that is an SEO bug; report it and score the host
+  the redirect lands on. Use that host in every command below.
 - **The code.** Framework (Next.js, Astro, plain HTML, Webflow export...),
   hosting (Vercel, Cloudflare, Netlify), CSS pipeline, where third-party tags
   load, existing tests. Check git history and any TODO/audit notes for what has
   already been fixed or deliberately declined so you do not re-propose it.
 - **PageSpeed API key.** Look for `PAGESPEED_API_KEY` (or `PSI_API_KEY`,
   `GOOGLE_API_KEY`) in the environment or `.env*`; `psi.mjs` loads
-  `.env.local`/`.env` from the current directory by itself. The keyless quota is gone
+  `.env.local`/`.env` from the **current working directory** (the site's
+  repo, not the skill's), and a value already exported in the shell always
+  wins over the file, so a stale export silently shadows a good `.env`. If
+  the API says "API key not valid", check `echo ${#PAGESPEED_API_KEY}`
+  before the file. The keyless quota is gone
   (HTTP 429 on the first call), so without a key use local Lighthouse for the
   numbers and the browser for the official report. Tell the user a free key
   (Google Cloud Console → enable "PageSpeed Insights API" → API key) makes
@@ -48,6 +59,14 @@ Save everything under a scratch directory (never inside the repo unless it is
 gitignored), e.g. `--out /tmp/agent-perfect-website/<date>`.
 
 ```
+# Every page, five categories, canonical host resolved, one table. This is the baseline.
+# Discovery: sitemap.xml (recursing indexes) → robots.txt Sitemap: → same-origin link crawl → --urls FILE.
+# --engine psi (official, needs key) or local (Chrome; localhost/previews; scores WebMCP). --max caps big sites.
+node <skill>/scripts/site-sweep.mjs example.com --dry-run                       # host + page list only
+node <skill>/scripts/site-sweep.mjs example.com --engine psi --out <dir>        # official numbers, all pages
+node <skill>/scripts/site-sweep.mjs example.com --engine local --runs 3 --out <dir>   # stable local truth check
+
+# Single-URL runs for iterating on one page while fixing.
 # Official Lighthouse numbers (needs key). Mobile is the one people quote.
 node <skill>/scripts/psi.mjs https://example.com/ --strategy both --runs 2 --out <dir>
 
@@ -67,14 +86,19 @@ node <skill>/scripts/is-agentic.mjs example.com --full --out <dir>
 node <skill>/scripts/agent-checks.mjs https://example.com
 ```
 
-Then cover the templates, not the whole sitemap: the homepage plus four or
-five representative URLs (a content page, a listing, a post, a page with
-forms, the 404), one Lighthouse run each. Non-performance categories are
-deterministic, so one run is enough there, and Performance outliers show up
-on the first pass anyway (a 10 MB gallery page reads 51 every time). Only if
-a template scores oddly go to three runs. For a true whole-site sweep use
-`npx unlighthouse --site <url>`, which crawls the sitemap and shows every
-page's four scores without 30 MB of JSON.
+The sweep scores every discovered page once per strategy. Non-performance
+categories are deterministic, so one run is enough there, and Performance
+outliers show up on the first pass anyway (a 10 MB gallery page reads 51
+every time); add `--runs 3` only when a page scores oddly. A site whose
+internal links are all `#fragments` is one page, and the sweep says so.
+While fixing, iterate on single URLs with `psi.mjs`/`lighthouse.mjs`
+(homepage plus the template you are changing), then re-run the sweep before
+reporting. The sweep also prints the failing audits grouped across pages,
+which is the input to triage below. `npx unlighthouse --site <url>` remains
+an alternative whole-site view if you want its dashboard.
+
+Pages that do not return 200 are listed as "not scored" (Lighthouse and
+PSI both refuse them); the 404 page itself is checked by `agent-checks.mjs`.
 
 The two agent-readiness numbers above are the official ones (same APIs the
 sites use). PageSpeed is official only through the API key or the browser:
@@ -84,15 +108,17 @@ and the failed audits. Record shareable report URLs: PageSpeed's
 `/analysis/<slug>/<id>` links and `https://is-agentic.com/scan/<host>` are the
 evidence the user will want later.
 
-Write the baseline as one table (page × grader × category) plus the raw
-failing-audit list from `lh-summary.mjs`. That table is the "before" column
-of the final report, so keep it.
+Write the baseline as one table (every page × grader × category; the
+sweep prints it and saves `sweep-<host>.json`) plus the cross-page failing
+audit list. That table is the "before" column of the final report, so keep
+it.
 
 ## 2. Triage: turn failures into a ranked fix list
 
-`lh-summary.mjs` prints each failing weighted audit with the points it costs
-and the offending elements. Combine that with the agent-checks output and the
-official graders' failed items, then rank by:
+The sweep's "failing audits across pages" list shows which audit ids fail
+on how many pages; `lh-summary.mjs <json>` on any saved run shows the points
+each costs and the offending elements. Combine those with the agent-checks
+output and the official graders' failed items, then rank by:
 
 1. **Points per change.** One root-cause fix often clears several audits on
    every page (a cookie banner without a name, a carousel putting
@@ -187,6 +213,10 @@ rules), and only then change code.
 |---|---|---|---|---|---|---|---|
 | / | 74 → 100 | 90 → 100 | 92 → 100 | 100 | 1/2 → 3/3 | 62 → 91 | 79 → 95 |
 | /contact | ... |
+| (every page the sweep found; the two agent graders are per-host, fill once) |
+
+## Audits fixed across pages
+- `color-contrast` — was failing on 14/14 pages → 0/14 (one token change)
 
 Official reports: <pagespeed.web.dev links>, <grader screenshots or pasted results>
 
@@ -221,6 +251,7 @@ one run, say so.
 
 ## Files
 
+- `scripts/site-sweep.mjs` — resolves the canonical host, discovers every page (sitemap → robots → crawl → `--urls`), scores all of them with `psi.mjs` or `lighthouse.mjs`, prints the page × category table, worst page per category, and failing audits grouped across pages; saves `sweep-<host>.json` (`--engine`, `--strategy`, `--runs`, `--concurrency`, `--max`, `--depth`, `--exclude`, `--host`, `--dry-run`, `--json`).
 - `scripts/psi.mjs` — PageSpeed Insights API runner (key via env/flag; mobile/desktop; N runs; median; saves JSON; prints scorecard).
 - `scripts/lighthouse.mjs` — local Lighthouse runner with WebMCP flags, all five categories, N runs, median.
 - `scripts/lh-summary.mjs` — turns any Lighthouse or PSI JSON into the failing-audit scorecard (`--top N`, `--all`, `--json`).

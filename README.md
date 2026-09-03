@@ -53,7 +53,7 @@ You do not have to remember the command. The skill triggers on ordinary requests
 
 **Establish inputs.** Finds the production URL from the repo, works out the framework and host, checks for a PageSpeed API key, and reads the project's own notes so it does not re-propose things you already declined.
 
-**Measure the baseline.** Homepage plus the main templates (a content page, a listing, a post, a page with forms, the 404). Five categories from local Lighthouse with WebMCP enabled, both agent graders through their APIs, and an offline agent-readiness pass that also works on localhost and preview deploys.
+**Measure the baseline.** Every page. `site-sweep.mjs` first resolves the canonical host (apex vs `www`; the graders treat them as different sites), then finds the pages from the sitemap, the `Sitemap:` line in robots.txt, or a link crawl when neither exists, and scores all of them. Five categories from local Lighthouse with WebMCP enabled, both agent graders through their APIs, and an offline agent-readiness pass that also works on localhost and preview deploys.
 
 **Triage.** One root-cause change often clears several audits on every page at once: a cookie banner without an accessible name, a carousel that puts `role=group` on `<li>`, a brand color a few percent short of AA contrast, a favicon that 404s everywhere. Those come first. Contrast, spacing, and heading changes touch the design, so the change is minimal and called out in the report.
 
@@ -79,6 +79,7 @@ Each script also works on its own, outside Claude Code (Node 22+):
 
 | Script | What it does |
 |---|---|
+| `site-sweep.mjs <host>` | The whole site: canonical host, every page, five categories each, worst page per category, failing audits grouped across pages. `--engine psi` or `local`, `--max` for big sites, `--dry-run` to see the host and page list first. |
 | `psi.mjs <url>` | PageSpeed Insights API, all five categories, mobile and desktop, N runs, median. Needs `PAGESPEED_API_KEY`. |
 | `lighthouse.mjs <url>` | Local Lighthouse 13 with WebMCP enabled, N runs, median. The stable truth check. |
 | `lh-summary.mjs <json>` | Any Lighthouse or PSI JSON in, a scorecard out: failing audits, points lost, offending elements. |
@@ -87,7 +88,9 @@ Each script also works on its own, outside Claude Code (Node 22+):
 | `agent-checks.mjs <url>` | Offline agent-readiness checks for localhost and previews: robots, llms.txt, negotiation, `Link` header, JSON-LD, headers, bot access, 404s. |
 
 ```
-node agent-perfect-website/skills/agent-perfect-website/scripts/lighthouse.mjs https://dataacrobat.com/ --runs 3 --out /tmp/scores
+node agent-perfect-website/skills/agent-perfect-website/scripts/site-sweep.mjs dataacrobat.com --dry-run
+node agent-perfect-website/skills/agent-perfect-website/scripts/site-sweep.mjs dataacrobat.com --engine psi --out /tmp/scores
+node agent-perfect-website/skills/agent-perfect-website/scripts/lighthouse.mjs https://www.dataacrobat.com/ --runs 3 --out /tmp/scores
 node agent-perfect-website/skills/agent-perfect-website/scripts/isitagentready.mjs https://dataacrobat.com/ --profile content
 node agent-perfect-website/skills/agent-perfect-website/scripts/is-agentic.mjs dataacrobat.com --full
 ```
@@ -104,7 +107,7 @@ The reference files inside the skill hold the details; the short version:
 ## Requirements
 
 - Node 22 or newer and Chrome or Chromium. `npx -y lighthouse` fetches the CLI on first use.
-- A PageSpeed Insights API key for `psi.mjs`. It is free (Google Cloud Console → enable "PageSpeed Insights API" → create a key). Put it in a `.env` or `.env.local` in the project you run the skill from (see `.env.example`), or export `PAGESPEED_API_KEY`. The keyless quota is exhausted at all hours. Without a key the skill measures with local Lighthouse and points you at the pagespeed.web.dev page for the official report.
+- A PageSpeed Insights API key for `psi.mjs`. It is free (Google Cloud Console → enable "PageSpeed Insights API" → create a key). Put it in a `.env` or `.env.local` in the project you run the skill from (see `.env.example`), or export `PAGESPEED_API_KEY`. A value already exported in your shell always wins over the file, so if the API says "API key not valid" while `.env` looks right, check `echo ${#PAGESPEED_API_KEY}` for a stale export first. The keyless quota is exhausted at all hours. Without a key the skill measures with local Lighthouse and points you at the pagespeed.web.dev page for the official report.
 - No keys for isitagentready.com or is-agentic.com.
 
 ## How it was tested
