@@ -57,6 +57,21 @@
         "About, menu and contact pages are fixed too (lang, description, alt, heading order, labels) and every internal link and image path in the fixed site resolves",
         "No capability files a bakery does not have (api-catalog, MCP server card, OAuth metadata, A2A card) are added, and llms.txt / JSON-LD contain only facts present in the original pages or clearly marked placeholders"
       ]
+    },
+    {
+      "id": 4,
+      "name": "sweep-every-page-on-canonical-host",
+      "prompt": "Score my whole site, not just the homepage. It's example-bakery.com (the repo is the cwd, plain HTML on Netlify). I have PAGESPEED_API_KEY in .env.local. Give me a table with every page's five scores and tell me which problems are site-wide vs one page.",
+      "expected_output": "The agent runs site-sweep.mjs --dry-run first, reports that example-bakery.com redirects to www.example-bakery.com and that the canonical agrees, then sweeps that host with --engine psi. The report table has one row per discovered page (from the sitemap, or a link crawl if there is none), not a hand-picked sample, plus the failing audits grouped across pages with counts, and the two per-host agent graders run once against www.",
+      "files": [],
+      "assertions": [
+        "The agent resolves and states the canonical host (www vs apex) before scoring, and every subsequent command uses that host",
+        "site-sweep.mjs is used for the baseline; psi.mjs/lighthouse.mjs are used only for single-page iteration",
+        "The report table lists every page the sweep discovered, not only the homepage or a sample of templates",
+        "Site-wide failures are reported once with a page count, not repeated per page",
+        "Pages returning non-200 are listed as not scored rather than silently omitted",
+        "isitagentready.mjs and is-agentic.mjs are run once against the canonical host, not per page"
+      ]
     }
   ],
   "note": "Evals 1 and 2 target a real production site and its repo (replace <your-production-site> and run them from that repo's checkout); eval 3 uses the bundled demo-site fixture."

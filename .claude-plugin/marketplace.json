@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "One skill: score a website on PageSpeed Insights, isitagentready.com, and is-agentic.com, then fix it toward 100 everywhere.",
-    "version": "1.0.1"
+    "version": "1.1.0"
   },
   "plugins": [
     {

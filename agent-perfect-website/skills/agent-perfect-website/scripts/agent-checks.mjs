@@ -142,8 +142,19 @@ async function checkSitemap() {
   }
   const locs = [...r.body.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)].map((m) => m[1]);
   const isIndex = /<sitemapindex/i.test(r.body);
-  add("discovery", "sitemap.xml", locs.length ? "PASS" : "FAIL", `${locs.length} <loc> entries${isIndex ? " (sitemap index)" : ""}`, "The sitemap must list the canonical URLs.");
-  return isIndex ? [] : locs;
+  if (!isIndex) {
+    add("discovery", "sitemap.xml", locs.length ? "PASS" : "FAIL", `${locs.length} <loc> entries`, "The sitemap must list the canonical URLs.");
+    return locs;
+  }
+  // Sitemap index: pull the page URLs out of the child sitemaps (one level)
+  // so the page sample below has something to sample.
+  const pages = [];
+  for (const child of locs.slice(0, 20)) {
+    const c = await get(child);
+    if (c.status === 200) pages.push(...[...c.body.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)].map((m) => m[1]));
+  }
+  add("discovery", "sitemap.xml", pages.length ? "PASS" : "FAIL", `sitemap index with ${locs.length} child sitemap(s), ${pages.length} page URLs`, "The child sitemaps must list the canonical URLs.");
+  return pages;
 }
 
 async function checkWellKnown() {
