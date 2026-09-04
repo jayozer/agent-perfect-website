@@ -23,6 +23,7 @@
 //
 // site-sweep.mjs imports runLighthouse() from here to score every page.
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -34,9 +35,12 @@ export function chromeFlagsFor({ webmcp = true, extra = "" } = {}) {
   return ["--headless=new", webmcp ? "--enable-features=WebMCP,DevToolsWebMCPSupport" : "", extra].filter(Boolean).join(" ");
 }
 
+// Readable host+path plus a short hash of the exact URL, so paths that
+// differ only in punctuation (/a-b vs /a/b) never share an output file.
 export function slug(u) {
   const p = new URL(u);
-  return (p.host + p.pathname).replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+  const readable = (p.host + p.pathname).replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+  return `${readable}-${createHash("sha1").update(p.href).digest("hex").slice(0, 6)}`;
 }
 
 export const scoreLine = (raw) =>

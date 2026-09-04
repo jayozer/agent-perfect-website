@@ -18,6 +18,7 @@
 // summary can be regenerated with lh-summary.mjs and elements/urls looked up.
 //
 // site-sweep.mjs imports runPsi() from here to score every page of a site.
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -41,9 +42,12 @@ export const CATEGORIES = ["performance", "accessibility", "best-practices", "se
 
 export const envKey = () => process.env.PAGESPEED_API_KEY || process.env.PSI_API_KEY || process.env.GOOGLE_API_KEY || "";
 
+// Readable host+path plus a short hash of the exact URL, so paths that
+// differ only in punctuation (/a-b vs /a/b) never share an output file.
 export function slug(u) {
   const p = new URL(u);
-  return (p.host + p.pathname).replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+  const readable = (p.host + p.pathname).replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+  return `${readable}-${createHash("sha1").update(p.href).digest("hex").slice(0, 6)}`;
 }
 
 export const scoreLine = (raw) =>

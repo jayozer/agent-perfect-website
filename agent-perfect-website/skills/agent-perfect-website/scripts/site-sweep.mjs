@@ -86,18 +86,23 @@ export async function resolveHost(raw, override) {
   else notes.push("no <link rel=canonical> on the homepage");
   if (override) notes.push(`--host override: scoring ${override}`);
   const origin = `${new URL(home.url).protocol}//${host}`;
+  equivalentHosts = new Set([start.host, redirectHost, canonicalHost, host].filter(Boolean));
   return { origin, host, redirectHost, canonicalHost, notes, homepageHtml: home.body };
 }
 
 // ---------- 2. Discovery ----------
-const normalizeUrl = (u, origin) => {
+// Hosts that mean "this site": what the user typed, where it redirected, and
+// the canonical. Sitemaps often still list the pre-redirect origin (http://,
+// apex) — those paths are rebased onto the resolved origin. Unrelated hosts
+// are dropped.
+let equivalentHosts = new Set();
+export const normalizeUrl = (u, origin) => {
   try {
     const p = new URL(u, origin);
-    if (p.origin !== origin) return null;
+    const same = p.origin === origin || equivalentHosts.has(p.host);
+    if (!same) return null;
     if (SKIP_EXT.test(p.pathname)) return null;
-    p.hash = "";
-    p.search = "";
-    return p.origin + p.pathname;
+    return origin + p.pathname;
   } catch {
     return null;
   }
@@ -153,9 +158,13 @@ export async function discover(site) {
     const list = fs.readFileSync(urlsFile, "utf8").split(/\r?\n/).map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
     return { source: `--urls ${urlsFile}`, urls: list.map((u) => normalizeUrl(u, site.origin)).filter(Boolean) };
   }
-  let urls = await fromSitemap(site.origin + "/sitemap.xml", site.origin);
+  const onSite = (list) => list.map((u) => normalizeUrl(u, site.origin)).filter(Boolean);
+  let raw = await fromSitemap(site.origin + "/sitemap.xml", site.origin);
+  let urls = onSite(raw);
   if (urls.length) return { source: "sitemap.xml", urls };
-  urls = await fromRobots(site.origin);
+  if (raw.length) console.error(`note: sitemap.xml lists ${raw.length} URL(s) but none on ${site.host} (e.g. ${raw[0]}); falling back`);
+  raw = await fromRobots(site.origin);
+  urls = onSite(raw);
   if (urls.length) return { source: "robots.txt Sitemap:", urls };
   urls = await crawl(site.origin, site.homepageHtml);
   const note = urls.length === 1 && fragmentLinks ? `; homepage has ${fragmentLinks} #fragment links and no other internal pages: single-page site` : "";
@@ -168,18 +177,19 @@ async function scoreOne(url, strategy) {
   return runLighthouse(url, strategy, { outDir, runs, quiet: true });
 }
 
+// Runs fn over items with n workers. fn must not throw. When `stop()` is
+// called, workers finish their current item and take no more; the
+// untouched items are returned so the caller can report them.
 async function pool(items, n, fn) {
-  const out = new Array(items.length);
   let i = 0;
+  let stopped = false;
+  const stop = () => (stopped = true);
   await Promise.all(
     Array.from({ length: Math.min(n, items.length) }, async () => {
-      while (i < items.length) {
-        const idx = i++;
-        out[idx] = await fn(items[idx], idx);
-      }
+      while (!stopped && i < items.length) await fn(items[i++], stop);
     })
   );
-  return out;
+  return items.slice(i);
 }
 
 const pct = (s) => (s === null || s === undefined ? "n/a" : String(Math.round(s * 100)));
@@ -215,8 +225,10 @@ fs.mkdirSync(outDir, { recursive: true });
 
 const pages = [];
 const failures = [];
+let quotaHit = false;
 for (const strategy of strategies) {
-  await pool(urls, concurrency, async (url) => {
+  if (quotaHit) break;
+  const skipped = await pool(urls, concurrency, async (url, stop) => {
     try {
       const probe = await get(url);
       if (probe.status !== 200) {
@@ -233,11 +245,13 @@ for (const strategy of strategies) {
       failures.push({ url, strategy, error: e.message });
       if (!asJson) console.log(`${strategy.padEnd(7)} ${pathOf(url).padEnd(40)} ERROR ${e.message.split("\n")[0]}`);
       if (e.status === 429) {
+        quotaHit = true;
         console.error(explain429(key));
-        throw e;
+        stop();
       }
     }
-  }).catch(() => {});
+  });
+  for (const url of skipped) failures.push({ url, strategy, error: "skipped: PSI quota exhausted (429) earlier in the sweep" });
 }
 
 // ---------- report ----------
@@ -285,4 +299,4 @@ else {
   console.log(lines.join("\n"));
   console.log(`\nsaved: ${sweepFile}`);
 }
-process.exit(failures.length && !pages.length ? 2 : 0);
+process.exit(quotaHit || (failures.length && !pages.length) ? 2 : 0);
